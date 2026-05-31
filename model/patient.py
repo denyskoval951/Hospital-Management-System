@@ -1,19 +1,28 @@
 from .person import Person
 
-# Patient Class
-
-
 class Patient(Person):
-    def __init__(self, name, age, gender, patient_id, disease):
-        super().__init__(name, age, gender)
+    def __init__(self, person_id=None, name=None, contact=None, disease=None, diagnosis=None, age=None, gender=None, **kwargs):
+        
+        actual_id = person_id if person_id is not None else kwargs.get('id')
+        
+        super().__init__(actual_id, name, contact)
+        
+        self.age = age
+        self.gender = gender
+        self.patient_id = actual_id
+        self.disease = diagnosis if diagnosis is not None else disease
 
-        self.patient_id = patient_id
-        self.disease = disease
+    def get_info(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "contact": self._contact,
+            "disease": self.disease,
+            "role": "patient"
+        }
 
     @staticmethod
     def assign_doctor(cursor, conn, patient_id, doctor_id):
-        # Check if both patient and doctor exist
-
         cursor.execute("SELECT * FROM patients WHERE patient_id = %s", (patient_id,))
         patient = cursor.fetchone()
 
@@ -29,9 +38,7 @@ class Patient(Person):
             print("Patient or Doctor not found.")
 
     def save_to_db(self, cursor, conn):
-        query = (
-            "INSERT INTO patients (name, age, gender, disease) VALUES (%s, %s, %s, %s)"
-        )
+        query = "INSERT INTO patients (name, age, gender, disease) VALUES (%s, %s, %s, %s)"
         values = (self.name, self.age, self.gender, self.disease)
         cursor.execute(query, values)
         conn.commit()

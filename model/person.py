@@ -1,15 +1,18 @@
 # Person CLass
 
+from abc import ABC, abstractmethod
 
-class Person:
-    def __init__(self, name, age, gender):
+class Person(ABC):
+    def __init__(self, person_id, name, contact):
+        self._id = person_id
+        self._name = name
+        self._contact = contact
 
-        self.name = name
-        self.age = age
-        self.gender = gender
+    @property
+    def id(self): return self._id
 
-    def show_details(self):
+    @property
+    def name(self): return self._name
 
-        print(f"Name : {self.name}")
-        print(f"Age : {self.age}")
-        print(f"Gender : {self.gender}")
+    @abstractmethod
+    def get_info(self) -> dict: ...
